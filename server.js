@@ -1,49 +1,38 @@
-/*=====================================================
-Our Setup -
-Feel free to ignore all of this and skip to the questions at the end
-=======================================================*/
-var bodyParser = require('body-parser')
-var express = require('express')
-var app = express()
+let bodyParser = require('body-parser')
+let express = require('express')
+let app = express()
 
-var request = require('request')
-var mongoose = require('mongoose')
-var Book = require("./models/BookModel")
-var Person = require("./models/PersonModel")
+let request = require('request')
+let mongoose = require('mongoose')
+mongoose.set('strictQuery', true)
 
-mongoose.connect("mongodb://localhost/mongoose-practice")
+// db name: mongoose-practice
+mongoose.connect("mongodb://localhost:27017/mongoose-practice", {useNewUrlParser: true})
 
+let Book = require("./models/BookModel")
+let Person = require("./models/PersonModel")
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+let isbns = [9780156012195, 9780743273565, 9780435905484, 9780140275360, 9780756404741, 9780756407919, 9780140177398, 9780316769488, 9780062225672, 9780143130154, 9780307455925, 9781501143519]
+let BOOKS_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
 
-/*=====================================================
-Create books Collection
-=======================================================*/
-var isbns = [9780156012195, 9780743273565, 9780435905484, 9780140275360, 9780756404741, 9780756407919, 9780140177398, 9780316769488, 9780062225672, 9780143130154, 9780307455925, 9781501143519]
-var url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
-
-for (var i = 0; i < isbns.length; i++) {
-  var apiURL = url + isbns[i];
-  /*=====================================================
-  the first time you run your code, uncomment the function below.
-  for subsequent runs, re-comment it so that it runs only once!
-  that said, there is a fail-safe to avoid duplicates below
-  =======================================================*/
-  loadFromAPI(apiURL)
+// create books collection
+for (let i = 0; i < isbns.length; i++) {
+  let bookURL = BOOKS_URL + isbns[i]
+  loadFromAPI(bookURL)
 }
 console.log("done");
 
 function loadFromAPI(apiURL) {
 
   request(apiURL, function(error, response, body) {
-
-    var result = JSON.parse(body)
+    let result = JSON.parse(body)
 
     if (result.totalItems && !error && response.statusCode == 200) {
-      var resBook = JSON.parse(body).items[0].volumeInfo
+      let resBook = JSON.parse(body).items[0].volumeInfo
 
-      var book = new Book({
+      let book = new Book({
         title: resBook.title,
         author: resBook.authors ? resBook.authors[0] : '',
         pages: resBook.pageCount,
@@ -61,34 +50,36 @@ function loadFromAPI(apiURL) {
   })
 }
 
+// create people collection
+let colors = ["brown", "black", "red", "yellow", "green", "grey"]
 
-/*=====================================================
-Create People Collection
-=======================================================*/
-var colors = ["brown", "black", "red", "yellow", "green", "grey"]
-var getColor = function() {
+const getColor = function() {
   return colors[Math.floor(Math.random() * colors.length)]
 }
-var getWeight = function() {
+
+const getWeight = function() {
   return getRandIntBetween(50, 120)
 }
-var getHeight = function() {
+
+const getHeight = function() {
   return getRandIntBetween(120, 230)
 }
-var getSalary = function() {
+
+const getSalary = function() {
   return getRandIntBetween(20000, 50000)
 }
-var getNumKids = function() {
+
+const getNumKids = function() {
   return Math.floor(Math.random() * 3)
 }
 
-var getRandIntBetween = function(min, max) {
+const getRandIntBetween = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-var getKids = function(numKids) {
-  var kids = [];
-  for (var i = 0; i < numKids; i++) {
+const getKids = function(numKids) {
+  let kids = [];
+  for (let i = 0; i < numKids; i++) {
     kids.push({
       hair: getColor(),
       eyes: getColor(),
@@ -98,7 +89,6 @@ var getKids = function(numKids) {
   }
   return kids;
 }
-
 
 /*=====================================================
 the below code always makes sure
@@ -110,11 +100,11 @@ could you write it differently?
 =======================================================*/
 Person.find({}).count(function(err, count) {
   // the below two loops could be changed to a simple:
-  // for (var i = count; i < 100; i++) {}
+  // for (let i = count; i < 100; i++) {}
   if (count < 100) {
-    for (var i = 0; i < 100 - count; i++) {
-      var numKids = getNumKids();
-      var p = new Person({
+    for (let i = 0; i < 100 - count; i++) {
+      let numKids = getNumKids();
+      let p = new Person({
         hair: getColor(),
         eyes: getColor(),
         weight: getWeight(),
@@ -127,7 +117,6 @@ Person.find({}).count(function(err, count) {
     }
   }
 })
-
 
 /*=====================================================
 Start the server:
@@ -154,7 +143,6 @@ and your server is running do the following:
 //2. Find books whose rating is less than 5, and sort by the author's name
 
 //3. Find all the Fiction books, skip the first 2, and display only 3 of them
-
 
 /*People
 ----------------------*/

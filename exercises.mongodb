@@ -1,0 +1,55 @@
+
+const database = 'mongoose-practice'
+use(database)
+
+// Books
+//1. Find books with fewer than 500 but more than 200 pages
+// db.books.find({
+//     $and: [
+//         {pages: {$gt: 200}},
+//         {pages: {$lt: 500}}
+//     ]
+// })
+//2. Find books whose rating is less than 5, and sort by the author's name
+// db.books.find({rating: {$lt: 5}}).sort({author: 1})
+
+//3. Find all the Fiction books, skip the first 2, and display only 3 of them
+// db.books.find({genres: "Fiction"}).skip(2).limit(3)
+
+
+// People
+//1. Find all the people who are tall (>180) AND rich (>30000)
+// db.people.find({
+//     $and: [
+//         {height: {$gt: 180}},
+//         {salary: {$gt: 30000}}
+//     ]
+// })
+//2. Find all the people who are tall (>180) OR rich (>30000)
+// db.people.find({
+//     $or: [
+//         {height: {$gt: 180}},
+//         {salary: {$gt: 30000}}
+//     ]
+// })
+
+//3. Find all the people who have grey hair or eyes, and are skinny (<70)
+// db.people.find({
+//     $and: [
+//         {$or: [
+//             {hair: "grey"},
+//             {eyes: "grey"}
+//         ]},
+//         {weight: {$lt: 70}}
+//     ]
+// })
+
+//4. Find people who have at least 1 kid with grey hair
+// db.people.find({
+//     "kids.hair": "grey"
+// })
+
+//5. Find all the people who have at least one overweight kid, and are overweight themselves (>100)
+db.people.find({
+    "kids.weight": {$gt: 100}
+})
